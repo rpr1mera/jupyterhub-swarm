@@ -1,5 +1,5 @@
-# Build as jupyterhub/singleuser
-# Run with the DockerSpawner in JupyterHub
+# Jupyter Notebook
+# Launched by JupyterHub's DockerSpawner
 
 ARG BASE_IMAGE=jupyterhub/singleuser:latest
 FROM $BASE_IMAGE

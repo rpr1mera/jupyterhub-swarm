@@ -1,4 +1,5 @@
-# This work in progress
+# This is work in progress, missing the livy definition and
+# repository dependencies
 version: "3"
 services:
   proxy:
