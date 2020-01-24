@@ -1,0 +1,24 @@
+# Build as jupyterhub/singleuser
+# Run with the DockerSpawner in JupyterHub
+
+ARG BASE_IMAGE=jupyterhub/singleuser:latest
+FROM $BASE_IMAGE
+MAINTAINER WOOMBAT Consulting Group <richard.primera@woombatcg.com>
+
+## Sparkmagic
+USER root
+RUN apt-get update
+RUN apt-get -y install build-essential
+
+RUN groupadd --gid 10240 jupyter_shared
+RUN usermod --gid 10240 jovyan
+
+USER jovyan
+RUN python3 -m pip install sparkmagic
+RUN jupyter labextension install @jupyter-widgets/jupyterlab-manager
+
+RUN jupyter-kernelspec install --user /opt/conda/lib/python3.7/site-packages/sparkmagic/kernels/sparkkernel
+RUN jupyter-kernelspec install --user /opt/conda/lib/python3.7/site-packages/sparkmagic/kernels/pysparkkernel
+RUN jupyter-kernelspec install --user /opt/conda/lib/python3.7/site-packages/sparkmagic/kernels/sparkrkernel
+
+RUN jupyter serverextension enable --py sparkmagic

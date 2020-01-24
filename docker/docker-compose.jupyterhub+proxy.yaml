@@ -1,0 +1,35 @@
+version: "3"
+services:
+  proxy:
+    env_file: env.proxy
+    image: jupyterhub/configurable-http-proxy:latest
+    networks:
+      - jupyterhub-net
+    # Expose the proxy port for services outside the overlay
+    # docker network
+    ports:
+      - "8000:8000"
+    command:
+      - configurable-http-proxy
+      - '--error-target'
+      - 'http://hub/hub/error'
+
+  hub:
+    # Build an image with SwarmSpawner
+    env_file: env.jupyterhub
+    build:
+      context: "./"
+      dockerfile: "Dockerfile.jupyterhub"
+    volumes:
+      # Important: Mount the docker socket so that the Hub is able
+      # to launch docker services on the manager node
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "/jupyterhub/user:/jupyterhub/user"
+      - "./jupyterhub_config.py:/srv/jupyterhub/jupyterhub_config.py"
+      - "./imgprep.py:/srv/jupyterhub/imgprep.py"
+      - "./krb5.conf:/etc/krb5.conf"
+    networks:
+      - jupyterhub-net
+networks:
+  jupyterhub-net:
+    driver: overlay
